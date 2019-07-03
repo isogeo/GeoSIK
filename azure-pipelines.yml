@@ -15,9 +15,9 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: Install-Package MSBuildTasks
-
 - task: NuGetToolInstaller@1
+
+- script: Install-Package MSBuildTasks
 
 - task: NuGetCommand@2
   inputs:
