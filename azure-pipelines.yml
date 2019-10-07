@@ -31,15 +31,13 @@ jobs:
   - task: VSBuild@1
 
   - script: |
-    
-    env:
-      solutionGeoSik: ./GeoSik/Library/Library.csproj
-
       inputs:
         solution: '$(solutionGeoSik)'
         msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
         platform: '$(buildPlatform)'
-      displayName: 'Compilation of GeoSik'
+    displayName: 'Compilation of GeoSik'
+    env:
+      solutionGeoSik: ./GeoSik/Library/Library.csproj
 
 #  - task: NuGetToolInstaller@1
 
