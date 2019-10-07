@@ -33,10 +33,10 @@ jobs:
   - script: |
     
     env:
-      solution: ./GeoSik/Library/Library.csproj
+      solutionGeoSik: ./GeoSik/Library/Library.csproj
 
       inputs:
-        solution: '$(solution)'
+        solution: '$(solutionGeoSik)'
         msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
         platform: '$(buildPlatform)'
       displayName: 'Compilation of GeoSik'
