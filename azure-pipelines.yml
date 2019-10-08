@@ -18,7 +18,8 @@ pr:
 
 jobs:
 
-- job: 'Compilation'
+- job: 'Pack_Solution_in_nupkg_files'
+  #dependsOn: Debug
   pool:
     vmImage: 'windows-2019'
 
@@ -26,33 +27,128 @@ jobs:
     solution: 'GeoSik.dev.sln'
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Release'
+    #artifactDirectoryName: 'ddlDirectory'
+    #artifactPath: $(System.DefaultWorkingDirectory)
 
+## not working because problem configuration .Nuget (wrong dependencies)
+##  - task: NuGetCommand@2
+##    inputs:
+##      restoreSolution: $(solution)
   steps:
+  #- powershell: tree .
+  #- powershell: cd $(artifactPath); if ($?){new-item -Name $(artifactDirectoryName) -ItemType directory}
+  #cd $(artifactPath) &&
+  #- bash:  mkdir $(artifactDirectoryName)
+  #  env:  
+  #    artifactPath: $(artifactPath)
+  #    artifactDirectoryName: $(artifactDirectoryName)
+
+#
+  - task: NuGetToolInstaller@1
+    displayName: "Installation NuGet Configuration"
   - task: VSBuild@1
+    displayName: 'Restore NuGet package'
+    inputs:
+      solution: $(solution)
+      vsVersion: latest
+      msbuildArchitecture: x64
+      msbuildArgs: '-t:restore /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
+      platform: $(buildPlatform)
+      configuration: $(buildConfiguration)
 
-  - script: |
-      inputs:
-        solution: '$(solutionGeoSik)'
-        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-        platform: '$(buildPlatform)'
-    displayName: 'Compilation of GeoSik'
-    env:
-      solutionGeoSik: ./GeoSik/Library/Library.csproj
+  - task: VSBuild@1
+    displayName: 'Compilation of GeoSik solution'
+    inputs:
+      solution: $(solution)
+      vsVersion: latest
+      msbuildArchitecture: x64
+      msbuildArgs: '/p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
+      platform: $(buildPlatform)
+      configuration: $(buildConfiguration)
 
-#  - task: NuGetToolInstaller@1
-
-#  - task: NuGetCommand@2
-#    inputs:
-#      restoreSolution: '$(solution)'
+  - task: NuGetCommand@2
+    displayName: 'Generation NuGet packages'
+    inputs:
+      command: 'pack'
+      configuration: $(buildConfiguration)
+      packagesToPack: '**/*.csproj'
+      #versioningScheme: 'byBuildNumber'
+  - powershell: cd $(System.DefaultWorkingDirectory); if ($?){echo "*.nuget/\n.gitignore\n*.sln\n*.csproj\n*.cs\n*.yml\n*.bat\n*.proj\n*.md\n*.csproj\n*.txt\n*.nuspec\n*.snk\n*.resx" > .artifactignore}; if ($?){Get-Content .artifactignore} else{echo "error generation artifactignore file"; exit 1}
+  - task: PublishPipelineArtifact@1
+    displayName: 'Generation NuGet artifacts'
+    inputs:
+      artifact: 'GeoSIK_Solution'
+      path: $(System.DefaultWorkingDirectory)
 
 #  - task: VSBuild@1
+#    displayName: 'Compilation of GeoSik solution'
 #    inputs:
-#      solution: '$(solution)'
-#      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-#      platform: '$(buildPlatform)'
-#      configuration: '$(buildConfiguration)'
+#      solution: $(solution)
+#      vsVersion: latest
+#      msbuildArchitecture: x64
+#      msbuildArgs: '-t:restore /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
+#      platform: $(buildPlatform)
+#      configuration: $(buildConfiguration)
+  ##- powershell: echo "$(artifactPath)/$(artifactDirectoryName)/"
+#  - powershell: cd $(System.DefaultWorkingDirectory); if ($?){echo "*.nuget/ .gitignore *.sln *.csproj *.cs *.yml *.bat *.proj *.md *.csproj *.txt *.nuspec *.snk *.resx" > .artifactignore}; if ($?){Get-Content .artifactignore} else{echo "error generation artifactignore file"; exit 1}
+#  - task: PublishPipelineArtifact@1
+#    inputs:
+#      artifact: 'GeoSIK_Solution'
+#      path: $(System.DefaultWorkingDirectory)
+      ##$(artifactPath)/$(artifactDirectoryName)/
+##  - bash: ls -l .
+#  - powershell: tree .
+##  - download: current
+##    patterns: '**/*.dll'
+##  - task: PublishBuildArtifacts@1
+##    inputs:
+##      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+##      artifactName: SolutionGeoSik
 
-#  - task: VSTest@2
-#    inputs:
-#      platform: '$(buildPlatform)'
-#      configuration: '$(buildConfiguration)'
+
+
+
+#- job: 'CompilationProject'
+#  pool:
+#    vmImage: 'windows-2019'
+
+##  steps:
+
+## - not working with MSBuild
+## platform: $(buildPlatform)
+## configuration: $(buildConfiguration)
+
+## -t:restore not working
+##  - task: MSBuild@1
+##    displayName: 'Compilation of GeoSik Library Core project'
+##    inputs:
+##      project: $(projectGeoSik)
+##      msbuildVersion: 'latest'
+##      msbuildArchitecture: 'x64'
+##      msbuildArguments: '/p:Configuration="$(buildConfiguration)" /p:Platform="$(buildPlatform)" /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
+##    env:
+##      projectGeoSik: './Library/Library.csproj'
+
+##  - task: PublishPipelineArtifact@1
+##    displayName: 'Compilation of GeoSik project'
+##    inputs:
+##      artifact: 'GeoSIK_Project_Library_Core'
+##      path: ./Library
+
+##  - task: NuGetToolInstaller@1
+
+##  - task: NuGetCommand@2
+##    inputs:
+##      restoreSolution: '$(solution)'
+
+##  - task: VSBuild@1
+##    inputs:
+##      solution: '$(solution)'
+##      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+##      platform: '$(buildPlatform)'
+##      configuration: '$(buildConfiguration)'
+
+##  - task: VSTest@2
+##    inputs:
+##      platform: '$(buildPlatform)'
+##      configuration: '$(buildConfiguration)'
