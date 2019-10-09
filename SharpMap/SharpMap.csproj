@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <version>2.1.1.1</version>
     <ProductVersion>8.0.30703</ProductVersion>
     <RootNamespace>GeoSik.SharpMap</RootNamespace>
     <AssemblyName>GeoSik.SharpMap</AssemblyName>
@@ -9,7 +8,10 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DocumentationFile>bin\$(Configuration)\GeoSik.SharpMap.xml</DocumentationFile>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <version>2.1.1.1</version>
     <Authors>dev@isogeo.com</Authors>
+    <Owners>Isogeo</Owners>
+    <Copyright>Copyright © 2012-2019 Isogeo</Copyright>
     <Description>Library that makes GeoSik interoperable with SharpMap spatial types.</Description>
     <PackageDescription>Library that makes GeoSik interoperable with SharpMap spatial types.</PackageDescription>
     <PackageProjectUrl>http://geosikdev.blogspot.com/</PackageProjectUrl>

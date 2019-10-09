@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <version>2.1.1.1</version>
     <ProductVersion>8.0.30703</ProductVersion>
     <RootNamespace>GeoSik.SqlServer</RootNamespace>
     <AssemblyName>GeoSik.SqlServer.2016</AssemblyName>
@@ -34,7 +33,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\misc\GeoSik.snk</AssemblyOriginatorKeyFile>
+    <version>2.1.1.1</version>
     <Authors>dev@isogeo.com</Authors>
+    <Owners>Isogeo</Owners>
+    <Copyright>Copyright © 2012-2019 Isogeo</Copyright>
     <Description>Library that makes GeoSik interoperable with Sql Server 2016 spatial types.</Description>
     <PackageDescription>Library that makes GeoSik interoperable with Sql Server 2016 spatial types.</PackageDescription>
     <PackageProjectUrl>http://geosikdev.blogspot.com/</PackageProjectUrl>
