@@ -18,12 +18,13 @@ pr:
 
 jobs:
 
-- job: 'Pack_Solution_in_nupkg_files'
+- job: 'GenerateNuGetFiles'
   #dependsOn: Debug
   pool:
     vmImage: 'windows-2019'
 
   variables:
+    SolutionDir: $(System.DefaultWorkingDirectory)
     solution: 'GeoSik.dev.sln'
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Release'
@@ -66,19 +67,39 @@ jobs:
       platform: $(buildPlatform)
       configuration: $(buildConfiguration)
 
+  - powershell: tree .
+    displayName: 'Debug'
+  
+  - powershell: dir .; cd  .nuget; dir .
+
   - task: NuGetCommand@2
     displayName: 'Generation NuGet packages'
     inputs:
       command: 'pack'
       configuration: $(buildConfiguration)
-      packagesToPack: '**/*.csproj'
+      packagesToPack: '**\*.csproj;!**\*.Test.csproj'
       #versioningScheme: 'byBuildNumber'
+ 
   - powershell: cd $(System.DefaultWorkingDirectory); if ($?){echo "*.nuget/\n.gitignore\n*.sln\n*.csproj\n*.cs\n*.yml\n*.bat\n*.proj\n*.md\n*.csproj\n*.txt\n*.nuspec\n*.snk\n*.resx" > .artifactignore}; if ($?){Get-Content .artifactignore} else{echo "error generation artifactignore file"; exit 1}
+    displayName: 'add .artifactignore file'
+
   - task: PublishPipelineArtifact@1
     displayName: 'Generation NuGet artifacts'
     inputs:
       artifact: 'GeoSIK_Solution'
       path: $(System.DefaultWorkingDirectory)
+
+- job: 'PushNuGetPackage'
+  dependsOn: GenerateNuGetFiles
+  pool:
+    vmImage: 'windows-2019'
+
+  variables:
+    solution: 'GeoSik.dev.sln'
+    buildPlatform: 'Any CPU'
+    buildConfiguration: 'Release'
+
+
 
 #  - task: VSBuild@1
 #    displayName: 'Compilation of GeoSik solution'
