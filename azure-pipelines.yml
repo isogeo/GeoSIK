@@ -16,187 +16,141 @@ trigger:
 pr:
 - master
 
-jobs:
+variables:
+  NuGetArtifactName: 'GeoSikNuGetPackages'
 
-- job: 'GenerateNuGetPackages'
-  #dependsOn: Debug
-  pool:
-    vmImage: 'windows-2019'
+stages:
+- stage: Deploy
+  jobs:
 
-## not working because problem configuration .Nuget (wrong dependencies)
+## FIRST JOB ###
+
+    - job: 'GenerateNuGetPackages'
+      pool:
+        vmImage: 'windows-2019'
+
+      variables:
+        SolutionDir: $(System.DefaultWorkingDirectory)
+        solution: 'GeoSik.dev.sln'
+        buildPlatform: 'Any CPU'
+        buildConfiguration: 'Release'
+        artifactDirectoryName: 'NuGetFolder'
+        artifactDirectoryLocation: $(System.DefaultWorkingDirectory)
+        artifactPath: $(artifactDirectoryLocation)\$(artifactDirectoryName)
+
+      steps:
+
+      - task: NuGetToolInstaller@1
+        displayName: "Installation NuGet Configuration"
+
+## Not working because problem configuration .Nuget
 ##  - task: NuGetCommand@2
+##    displayName: 'Restore NuGet packages'
 ##    inputs:
 ##      restoreSolution: $(solution)
+## So, did it with VSBuild
 
-  #- powershell: tree .
-  #- powershell: cd $(artifactPath); if ($?){new-item -Name $(artifactDirectoryName) -ItemType directory}
-  #cd $(artifactPath) &&
-  #- bash:  mkdir $(artifactDirectoryName)
-  #  env:  
-  #    artifactPath: $(artifactPath)
-  #    artifactDirectoryName: $(artifactDirectoryName)
+      - task: VSBuild@1
+        displayName: 'Restore NuGet packages'
+        inputs:
+          solution: $(solution)
+          vsVersion: latest
+          msbuildArchitecture: x64
+          msbuildArgs: '-t:restore /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
+          platform: $(buildPlatform)
+          configuration: $(buildConfiguration)
 
-  variables:
-    SolutionDir: $(System.DefaultWorkingDirectory)
-    solution: 'GeoSik.dev.sln'
-    buildPlatform: 'Any CPU'
-    buildConfiguration: 'Release'
-    artifactDirectoryName: 'NuGetFolder'
-    artifactDirectoryLocation: $(System.DefaultWorkingDirectory)
-    artifactPath: $(artifactDirectoryLocation)\$(artifactDirectoryName)
+      - task: VSBuild@1
+        displayName: 'Compilation GeoSik solution'
+        inputs:
+          solution: $(solution)
+          vsVersion: latest
+          msbuildArchitecture: x64
+          msbuildArgs: '/p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
+          platform: $(buildPlatform)
+          configuration: $(buildConfiguration)
 
-  steps:
+      - task: NuGetCommand@2
+        displayName: 'Generation NuGet packages'
+        inputs:
+          command: 'pack'
+          configuration: $(buildConfiguration)
+          packagesToPack: '**\*.csproj;!**\*.Tests.csproj'
 
-  - task: NuGetToolInstaller@1
-    displayName: "Installation NuGet Configuration"
+      - powershell: cd $(artifactDirectoryLocation); if ($?){new-item -Name $(artifactDirectoryName) -ItemType directory}
+        displayName: 'Create NuGet Folder'
 
-  - task: VSBuild@1
-    displayName: 'Restore NuGet packages'
-    inputs:
-      solution: $(solution)
-      vsVersion: latest
-      msbuildArchitecture: x64
-      msbuildArgs: '-t:restore /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
-      platform: $(buildPlatform)
-      configuration: $(buildConfiguration)
+      - powershell: cd $(artifactPath); if ($?){echo "*.xml`r*.xsd`r*.csv`r*.dll`r*.pdb`r*.metadata`r*.p7s`r*.targets`r*.props`r*.json`r*.cache`r*.XML`r*.config`r.git`r*.nuget/`r.gitignore`r*.sln`r*.csproj`r*.cs`r*.yml`r*.bat`r*.proj`r*.md`r*.csproj`r*.txt`r*.nuspec`r*.snk`r*.resx`r" > .artifactignore}; if ($?){Get-Content .artifactignore} else{echo "error generation artifactignore file"; exit 1}
+        displayName: 'add .artifactignore file'
 
-  - task: VSBuild@1
-    displayName: 'Compilation GeoSik solution'
-    inputs:
-      solution: $(solution)
-      vsVersion: latest
-      msbuildArchitecture: x64
-      msbuildArgs: '/p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
-      platform: $(buildPlatform)
-      configuration: $(buildConfiguration)
+  ## Action : Copy nupkg files
+  ## Put "-Recurse" at the end of each copies if you also need to obtain dll, xml, ... files
+  ## Don't forget to change in consequence .artifactignore file, a precedent task
+      - powershell: |
+          Copy-Item -Path $env:DotSpatial -Destination $(artifactPath)/DotSpatial;
+          Copy-Item -Path $env:Fdo -Destination $(artifactPath)/Fdo;
+          Copy-Item -Path $env:Library -Destination $(artifactPath)/Library;
+          Copy-Item -Path $env:Services -Destination $(artifactPath)/Services;
+          Copy-Item -Path $env:SharpMap -Destination $(artifactPath)/SharpMap;
+          Copy-Item -Path $env:SqlServer2008R2 -Destination $(artifactPath)/SqlServer2008R2;
+          Copy-Item -Path $env:SqlServer2012 -Destination $(artifactPath)/SqlServer2012;
+          Copy-Item -Path $env:SqlServer2014 -Destination $(artifactPath)/SqlServer2014;
+          Copy-Item -Path $env:SqlServer2016 -Destination $(artifactPath)/SqlServer2016;
+        env:
+          DotSpatial: '$(System.DefaultWorkingDirectory)/DotSpatial/bin/Release/*'
+          Fdo: '$(System.DefaultWorkingDirectory)/Fdo/bin/Release/*'
+          Library: '$(System.DefaultWorkingDirectory)/Library/bin/Release/*'
+          Services: '$(System.DefaultWorkingDirectory)/Services/bin/Release/*'
+          SharpMap: '$(System.DefaultWorkingDirectory)/SharpMap/bin/Release/*'
+          SqlServer2008R2: '$(System.DefaultWorkingDirectory)/SqlServer/2008R2/bin/Release/*'
+          SqlServer2012: '$(System.DefaultWorkingDirectory)/SqlServer/2012/bin/Release/*'
+          SqlServer2014: '$(System.DefaultWorkingDirectory)/SqlServer/2014/bin/Release/*'
+          SqlServer2016: '$(System.DefaultWorkingDirectory)/SqlServer/2016/bin/Release/*'
+        displayName: 'Copy NuGet Packages to NuGet folder'
 
-  - task: NuGetCommand@2
-    displayName: 'Generation NuGet packages'
-    inputs:
-      command: 'pack'
-      configuration: $(buildConfiguration)
-      packagesToPack: '**\*.csproj;!**\*.Tests.csproj'
-      #versioningScheme: 'byBuildNumber'
- 
-  - powershell: cd $(System.DefaultWorkingDirectory); if ($?){echo "*.xml`r*.xsd`r*.csv`r*.dll`r*.pdb`r*.metadata`r*.p7s`r*.targets`r*.props`r*.json`r*.cache`r*.XML`r*.config`r.git`r*.nuget/`r.gitignore`r*.sln`r*.csproj`r*.cs`r*.yml`r*.bat`r*.proj`r*.md`r*.csproj`r*.txt`r*.nuspec`r*.snk`r*.resx`r" > .artifactignore}; if ($?){Get-Content .artifactignore} else{echo "error generation artifactignore file"; exit 1}
-    displayName: 'add .artifactignore file'
+      - powershell: tree /F
+        displayName: 'Display Environment'
 
-  - powershell: cd $(artifactDirectoryLocation); if ($?){new-item -Name $(artifactDirectoryName) -ItemType directory}
-    displayName: 'Create NuGet Folder'
+      - task: PublishPipelineArtifact@1
+        displayName: 'Generation NuGet artifacts'
+        inputs:
+          artifact: $(NuGetArtifactName)
+          path: $(artifactPath)
 
-  - powershell: |
-      Copy-Item -Path $env:DotSpatial -Destination $(artifactPath)/DotSpatial;
-      Copy-Item -Path $env:Fdo -Destination $(artifactPath)/Fdo;
-      Copy-Item -Path $env:Library -Destination $(artifactPath)/Library;
-      Copy-Item -Path $env:Services -Destination $(artifactPath)/Services;
-      Copy-Item -Path $env:SharpMap -Destination $(artifactPath)/SharpMap;
-      Copy-Item -Path $env:SqlServer2008R2 -Destination $(artifactPath)/SqlServer2008R2;
-      Copy-Item -Path $env:SqlServer2012 -Destination $(artifactPath)/SqlServer2012;
-      Copy-Item -Path $env:SqlServer2014 -Destination $(artifactPath)/SqlServer2014;
-      Copy-Item -Path $env:SqlServer2016 -Destination $(artifactPath)/SqlServer2016;
-    env:
-      DotSpatial: '$(System.DefaultWorkingDirectory)/DotSpatial/bin/Release/*'
-      Fdo: '$(System.DefaultWorkingDirectory)/Fdo/bin/Release/*'
-      Library: '$(System.DefaultWorkingDirectory)/Library/bin/Release/*'
-      Services: '$(System.DefaultWorkingDirectory)/Services/bin/Release/*'
-      SharpMap: '$(System.DefaultWorkingDirectory)/SharpMap/bin/Release/*'
-      SqlServer2008R2: '$(System.DefaultWorkingDirectory)/SqlServer/2008R2/bin/Release/*'
-      SqlServer2012: '$(System.DefaultWorkingDirectory)/SqlServer/2012/bin/Release/*'
-      SqlServer2014: '$(System.DefaultWorkingDirectory)/SqlServer/2014/bin/Release/*'
-      SqlServer2016: '$(System.DefaultWorkingDirectory)/SqlServer/2016/bin/Release/*'
-    displayName: 'Copy NuGet Packages to NuGet folder'
-
-  - powershell: tree /F
-    displayName: 'Display Environment'
-
-  - task: PublishPipelineArtifact@1
-    displayName: 'Generation NuGet artifacts'
-    inputs:
-      artifact: 'GeoSikNuGetPackages'
-      path: $(artifactPath)
-
-#- job: 'PushNuGetPackage'
-#  dependsOn: GenerateNuGetFiles
-#  pool:
-#   vmImage: 'windows-2019'
-
-#  variables:
-#    solution: $(artifactPath)
-#    buildPlatform: 'Any CPU'
-#    buildConfiguration: 'Release'
+## Need to run tests, before push artifacts and then publish
+##  - job : 'GeoSikTests'
+##    - task: VSTest@2
+##      inputs:
+##        platform: '$(buildPlatform)'
+##        configuration: '$(buildConfiguration)'
 
 
+## SECOND JOB ###
 
+    - job: 'PublishNuGetPackages'
+      dependsOn: GenerateNuGetPackages
+      #dependsOn: GeoSikTests
+      pool:
+        vmImage: 'windows-2019'
 
-#  - task: VSBuild@1
-#    displayName: 'Compilation of GeoSik solution'
-#    inputs:
-#      solution: $(solution)
-#      vsVersion: latest
-#      msbuildArchitecture: x64
-#      msbuildArgs: '-t:restore /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
-#      platform: $(buildPlatform)
-#      configuration: $(buildConfiguration)
-  ##- powershell: echo "$(artifactPath)/$(artifactDirectoryName)/"
-#  - powershell: cd $(System.DefaultWorkingDirectory); if ($?){echo "*.nuget/ .gitignore *.sln *.csproj *.cs *.yml *.bat *.proj *.md *.csproj *.txt *.nuspec *.snk *.resx" > .artifactignore}; if ($?){Get-Content .artifactignore} else{echo "error generation artifactignore file"; exit 1}
-#  - task: PublishPipelineArtifact@1
-#    inputs:
-#      artifact: 'GeoSIK_Solution'
-#      path: $(System.DefaultWorkingDirectory)
-      ##$(artifactPath)/$(artifactDirectoryName)/
-##  - bash: ls -l .
-#  - powershell: tree .
-##  - download: current
-##    patterns: '**/*.dll'
-##  - task: PublishBuildArtifacts@1
-##    inputs:
-##      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-##      artifactName: SolutionGeoSik
+      variables:
+        solution: $(artifactPath)
+        buildPlatform: 'Any CPU'
+        buildConfiguration: 'Release'
+  
+      steps:
 
+      - task: DownloadPipelineArtifact@2
+        displayName: Recover NuGet packages Artifact
+        inputs:
+          buildType: 'current'
+          artifactName: $(NuGetArtifactName)
+          targetPath: $(System.DefaultWorkingDirectory)
 
-
-
-#- job: 'CompilationProject'
-#  pool:
-#    vmImage: 'windows-2019'
-
-##  steps:
-
-## - not working with MSBuild
-## platform: $(buildPlatform)
-## configuration: $(buildConfiguration)
-
-## -t:restore not working
-##  - task: MSBuild@1
-##    displayName: 'Compilation of GeoSik Library Core project'
-##    inputs:
-##      project: $(projectGeoSik)
-##      msbuildVersion: 'latest'
-##      msbuildArchitecture: 'x64'
-##      msbuildArguments: '/p:Configuration="$(buildConfiguration)" /p:Platform="$(buildPlatform)" /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true'
-##    env:
-##      projectGeoSik: './Library/Library.csproj'
-
-##  - task: PublishPipelineArtifact@1
-##    displayName: 'Compilation of GeoSik project'
-##    inputs:
-##      artifact: 'GeoSIK_Project_Library_Core'
-##      path: ./Library
-
-##  - task: NuGetToolInstaller@1
-
-##  - task: NuGetCommand@2
-##    inputs:
-##      restoreSolution: '$(solution)'
-
-##  - task: VSBuild@1
-##    inputs:
-##      solution: '$(solution)'
-##      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-##      platform: '$(buildPlatform)'
-##      configuration: '$(buildConfiguration)'
-
-##  - task: VSTest@2
-##    inputs:
-##      platform: '$(buildPlatform)'
-##      configuration: '$(buildConfiguration)'
+      - task: NuGetCommand@2
+        displayName: Publish NuGet packages to www.nuget.org
+        inputs:
+          command: 'push'
+          packagesToPush: '$(System.DefaultWorkingDirectory)/**/*.nupkg'
+          nuGetFeedType: 'external'
+          publishFeedCredentials: 'NugetOrg_asIsogeo'
