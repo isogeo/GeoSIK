@@ -16,8 +16,35 @@ trigger:
 pr:
 - master
 
+## GLOBAL VARIABLES ##
+
 variables:
   NuGetArtifactName: 'GeoSikNuGetPackages'
+ 
+ ## ABORT
+  ## GIT PROJECTS MODIFICATION BOOLEAN ##
+  #GeoSikModif: false
+  #DotSpatialModif: false
+  #FdoModif: false
+  #ProjNetModif: false
+  #ServicesModif: false
+  #SharpMapModif: false
+  #SqlServer2008R2Modif: false
+  #SqlServer2012Modif: false
+  #SqlServer2014Modif: false
+  #SqlServer2016Modif: false
+
+  ## NUGET PACKAGES PATH ##
+  DotSpatial: '$(System.DefaultWorkingDirectory)/DotSpatial/bin/Release/*'
+  Fdo: '$(System.DefaultWorkingDirectory)/Fdo/bin/Release/*'
+  ProjNet : '$(System.DefaultWorkingDirectory)/ProjNet/bin/Release/*'
+  Library: '$(System.DefaultWorkingDirectory)/Library/bin/Release/*'
+  Services: '$(System.DefaultWorkingDirectory)/Services/bin/Release/*'
+  SharpMap: '$(System.DefaultWorkingDirectory)/SharpMap/bin/Release/*'
+  SqlServer2008R2: '$(System.DefaultWorkingDirectory)/SqlServer/2008R2/bin/Release/*'
+  SqlServer2012: '$(System.DefaultWorkingDirectory)/SqlServer/2012/bin/Release/*'
+  SqlServer2014: '$(System.DefaultWorkingDirectory)/SqlServer/2014/bin/Release/*'
+  SqlServer2016: '$(System.DefaultWorkingDirectory)/SqlServer/2016/bin/Release/*'
 
 stages:
 - stage: Deploy
@@ -40,15 +67,50 @@ stages:
 
       steps:
 
+      ## ABORT
+        ## Action : Check difference commits on each project folder, then define true if there is a difference
+        ## Necessary for publishing projects that have a difference in the solution
+      #- powershell: |
+      #    $editedFiles = git diff HEAD HEAD~ --name-only
+      #    $editedFiles | ForEach-Object {
+      #      Switch -Wildcard ($_ ) {
+      #      'DotSpatial/*' { echo "##vso[task.setvariable variable=DotSpatialModif]True" }
+      #      'Library/*' { Write-Output "##vso[task.setvariable variable=GeoSikModif]True" }
+      #      'Fdo/*' { Write-Host "##vso[task.setvariable variable=FdoModif]True" }
+      #      'ProjNet/*' { Write-Output "##vso[task.setvariable variable=ProjNetModif]True" }
+      #      'Services/*' { Write-Output "##vso[task.setvariable variable=ServicesModif]True" }
+      #      'SharpMap/*' { Write-Output "##vso[task.setvariable variable=SharpMapModif]True" }
+      #      'SqlServer/2008R2/*' { Write-Output "##vso[task.setvariable variable=SqlServer2008R2Modif]True" }
+      #      'SqlServer/2012/*' { Write-Output "##vso[task.setvariable variable=SqlServer2012Modif]True" }
+      #      'SqlServer/2014/*' { Write-Output "##vso[task.setvariable variable=SqlServer2014Modif]True" }
+      #      'SqlServer/2016/*' { Write-Output "##vso[task.setvariable variable=SqlServer2016Modif]True" }
+      #      }
+      #    }
+      #  displayName: "Define projects to generate"
+
+    ## ABORT
+      #- powershell: |
+      #    echo $(GeoSikModif)
+      #    echo $(DotSpatialModif)
+      #    echo $(FdoModif)
+      #    echo $(ProjNetModif)
+      #    echo $(ServicesModif)
+      #    echo $(SharpMapModif)
+      #    echo $(SqlServer2008R2Modif)
+      #    echo $(SqlServer2012Modif)
+      #    echo $(SqlServer2014Modif)
+      #    echo $(SqlServer2016Modif)
+      #  displayName: DEBUG VARIABLES GEOSIK MODIF(s)
+
       - task: NuGetToolInstaller@1
         displayName: "Installation NuGet Configuration"
 
-## Not working because problem configuration .Nuget
-##  - task: NuGetCommand@2
-##    displayName: 'Restore NuGet packages'
-##    inputs:
-##      restoreSolution: $(solution)
-## So, did it with VSBuild
+        ## Not working because problem configuration .Nuget
+        #  - task: NuGetCommand@2
+        #    displayName: 'Restore NuGet packages'
+        #    inputs:
+        #      restoreSolution: $(solution)
+        ## So, did it with VSBuild, task below (VSBuild@1)
 
       - task: VSBuild@1
         displayName: 'Restore NuGet packages'
@@ -83,31 +145,20 @@ stages:
       - powershell: cd $(artifactPath); if ($?){echo "*.xml`r*.xsd`r*.csv`r*.dll`r*.pdb`r*.metadata`r*.p7s`r*.targets`r*.props`r*.json`r*.cache`r*.XML`r*.config`r.git`r*.nuget/`r.gitignore`r*.sln`r*.csproj`r*.cs`r*.yml`r*.bat`r*.proj`r*.md`r*.csproj`r*.txt`r*.nuspec`r*.snk`r*.resx`r" > .artifactignore}; if ($?){Get-Content .artifactignore} else{echo "error generation artifactignore file"; exit 1}
         displayName: 'add .artifactignore file'
 
-## Action : Copy nupkg files
-## Put "-Recurse" at the end of each copies if you also need to obtain dll, xml, ... files
-## Don't forget to change in consequence .artifactignore file, a precedent task
+        ## Action : Copy nupkg files
+        ## Put "-Recurse" at the end of each copies if you also need to obtain dll, xml, ... files
+        ## Don't forget to change in consequence .artifactignore file, a precedent task
       - powershell: |
-          Copy-Item -Path $env:DotSpatial -Destination $(artifactPath)/DotSpatial;
-          Copy-Item -Path $env:Fdo -Destination $(artifactPath)/Fdo;
-          Copy-Item -Path $env:ProjNet -Destination $(artifactPath)/ProjNet;
-          Copy-Item -Path $env:Library -Destination $(artifactPath)/Library;
-          Copy-Item -Path $env:Services -Destination $(artifactPath)/Services;
-          Copy-Item -Path $env:SharpMap -Destination $(artifactPath)/SharpMap;
-          Copy-Item -Path $env:SqlServer2008R2 -Destination $(artifactPath)/SqlServer2008R2;
-          Copy-Item -Path $env:SqlServer2012 -Destination $(artifactPath)/SqlServer2012;
-          Copy-Item -Path $env:SqlServer2014 -Destination $(artifactPath)/SqlServer2014;
-          Copy-Item -Path $env:SqlServer2016 -Destination $(artifactPath)/SqlServer2016;
-        env:
-          DotSpatial: '$(System.DefaultWorkingDirectory)/DotSpatial/bin/Release/*'
-          Fdo: '$(System.DefaultWorkingDirectory)/Fdo/bin/Release/*'
-          ProjNet : '$(System.DefaultWorkingDirectory)/ProjNet/bin/Release/*'
-          Library: '$(System.DefaultWorkingDirectory)/Library/bin/Release/*'
-          Services: '$(System.DefaultWorkingDirectory)/Services/bin/Release/*'
-          SharpMap: '$(System.DefaultWorkingDirectory)/SharpMap/bin/Release/*'
-          SqlServer2008R2: '$(System.DefaultWorkingDirectory)/SqlServer/2008R2/bin/Release/*'
-          SqlServer2012: '$(System.DefaultWorkingDirectory)/SqlServer/2012/bin/Release/*'
-          SqlServer2014: '$(System.DefaultWorkingDirectory)/SqlServer/2014/bin/Release/*'
-          SqlServer2016: '$(System.DefaultWorkingDirectory)/SqlServer/2016/bin/Release/*'
+          Copy-Item -Path $(DotSpatial) -Destination $(artifactPath)/DotSpatial;
+          Copy-Item -Path $(Fdo) -Destination $(artifactPath)/Fdo;
+          Copy-Item -Path $(ProjNet) -Destination $(artifactPath)/ProjNet;
+          Copy-Item -Path $(Library) -Destination $(artifactPath)/Library;
+          Copy-Item -Path $(Services) -Destination $(artifactPath)/Services;
+          Copy-Item -Path $(SharpMap) -Destination $(artifactPath)/SharpMap;
+          Copy-Item -Path $(SqlServer2008R2) -Destination $(artifactPath)/SqlServer2008R2;
+          Copy-Item -Path $(SqlServer2012) -Destination $(artifactPath)/SqlServer2012;
+          Copy-Item -Path $(SqlServer2014) -Destination $(artifactPath)/SqlServer2014;
+          Copy-Item -Path $(SqlServer2016) -Destination $(artifactPath)/SqlServer2016;
         displayName: 'Copy NuGet Packages to NuGet folder'
 
 ## DEBUG
@@ -121,12 +172,11 @@ stages:
           path: $(artifactPath)
 
 ## Need to run tests, before push artifacts and then publish
-##  - job : 'GeoSikTests'
-##    - task: VSTest@2
-##      inputs:
-##        platform: '$(buildPlatform)'
-##        configuration: '$(buildConfiguration)'
-
+#  - job : 'GeoSikTests'
+#    - task: VSTest@2
+#      inputs:
+#        platform: '$(buildPlatform)'
+#        configuration: '$(buildConfiguration)'
 
 ## SECOND JOB ###
 
@@ -139,16 +189,17 @@ stages:
         maxParallel: 3
         matrix:
           {
-            GeoSik: { package: $(System.DefaultWorkingDirectory)/Library/GeoSik.*.nupkg },
-            DotSpatial: { package: $(System.DefaultWorkingDirectory)/DotSpatial/GeoSik.DotSpatial.*.nupkg },
-            Fdo: { package: $(System.DefaultWorkingDirectory)/Fdo/GeoSik.Fdo.*.nupkg },
-            ProjNet: { package: $(System.DefaultWorkingDirectory)/ProjNet/GeoSik.ProjNet.*.nupkg },
-            Services: { package: $(System.DefaultWorkingDirectory)/Services/GeoSik.Services.*.nupkg },
-            SharpMap: { package: $(System.DefaultWorkingDirectory)/SharpMap/GeoSik.SharpMap.*.nupkg },
-            SqlServer2008R2: { package: $(System.DefaultWorkingDirectory)/SqlServer2008R2/GeoSik.SqlServer.2008R2.*.nupkg },
-            SqlServer2012: { package: $(System.DefaultWorkingDirectory)/SqlServer2012/GeoSik.SqlServer.2012.*.nupkg },
-            SqlServer2014: { package: $(System.DefaultWorkingDirectory)/SqlServer2014/GeoSik.SqlServer.2014.*.nupkg },
-            SqlServer2016: { package: $(System.DefaultWorkingDirectory)/SqlServer2016/GeoSik.SqlServer.2016.*.nupkg },
+          ## ABORT MODIF CONDITIONS
+            GeoSik: { package: $(System.DefaultWorkingDirectory)/Library/GeoSik.*.nupkg}, #, modif: $(GeoSikModif) },
+            DotSpatial: { package: $(System.DefaultWorkingDirectory)/DotSpatial/GeoSik.DotSpatial.*.nupkg}, #, modif: $(DotSpatialModif) },
+            Fdo: { package: $(System.DefaultWorkingDirectory)/Fdo/GeoSik.Fdo.*.nupkg}, #, modif: $(FdoModif) },
+            ProjNet: { package: $(System.DefaultWorkingDirectory)/ProjNet/GeoSik.ProjNet.*.nupkg},#, modif: $(ProjNetModif) },
+            Services: { package: $(System.DefaultWorkingDirectory)/Services/GeoSik.Services.*.nupkg},#, modif: $(ServicesModif) },
+            SharpMap: { package: $(System.DefaultWorkingDirectory)/SharpMap/GeoSik.SharpMap.*.nupkg},#,  modif: $(SharpMapModif) },
+            SqlServer2008R2: { package: $(System.DefaultWorkingDirectory)/SqlServer2008R2/GeoSik.SqlServer.2008R2.*.nupkg},#, modif: $(SqlServer2008R2Modif) },
+            SqlServer2012: { package: $(System.DefaultWorkingDirectory)/SqlServer2012/GeoSik.SqlServer.2012.*.nupkg},#, modif: $(SqlServer2012Modif) },
+            SqlServer2014: { package: $(System.DefaultWorkingDirectory)/SqlServer2014/GeoSik.SqlServer.2014.*.nupkg},#, modif: $(SqlServer2014Modif) },
+            SqlServer2016: { package: $(System.DefaultWorkingDirectory)/SqlServer2016/GeoSik.SqlServer.2016.*.nupkg}, #, modif: $(SqlServer2016Modif) },
           }
 
       variables:
@@ -159,6 +210,8 @@ stages:
       steps:
 
       - task: DownloadPipelineArtifact@2
+      ## ABORT
+        #condition: and(succeeded(), eq(variables['modif'], 'True'))
         displayName: Recover NuGet packages Artifact
         inputs:
           buildType: 'current'
@@ -166,6 +219,8 @@ stages:
           targetPath: $(System.DefaultWorkingDirectory)
 
       - task: NuGetCommand@2
+      ## ABORT
+        #condition: and(succeeded(), eq(variables['modif'], 'True'))
         displayName: Publish NuGet packages to www.nuget.org
         inputs:
           command: 'push'
