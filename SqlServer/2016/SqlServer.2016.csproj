@@ -45,7 +45,6 @@
     <RepositoryUrl>https://github.com/isogeo/GeoSIK</RepositoryUrl>
     <PackageTags>GeoSik SqlServer</PackageTags>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <PackageReference Include="CommonServiceLocator" Version="1.3" />
     <PackageReference Include="Newtonsoft.Json" Version="8.0.2" />

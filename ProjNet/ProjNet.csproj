@@ -48,7 +48,6 @@
     <Description>Library that makes GeoSik interoperable with Proj.NET projections.</Description>
     <PackageDescription>Library that makes GeoSik interoperable with Proj.NET projections.</PackageDescription>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <PackageReference Include="ProjNet" Version="1.2" />
   </ItemGroup>

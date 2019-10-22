@@ -56,7 +56,6 @@
     <PackageDescription>Library that makes the implementation of standard OGC Web Services easier.</PackageDescription>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <PackageReference Include="Common.Logging" Version="3.3.1" />
     <PackageReference Include="Common.Logging.Core" Version="3.3.1" />

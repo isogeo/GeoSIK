@@ -52,7 +52,6 @@
     <PackageTags>GeoSik DotSpatial coordinate systems projections</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <PackageReference Include="DotSpatial.Projections" Version="1.9" />
   </ItemGroup>

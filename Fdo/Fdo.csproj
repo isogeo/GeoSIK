@@ -45,7 +45,6 @@
     <RepositoryUrl>https://github.com/isogeo/GeoSIK</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <PackageReference Include="LinqToXsd" Version="2.0.2" />
     <PackageReference Include="ProjNet" Version="1.2" />

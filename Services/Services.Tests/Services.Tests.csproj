@@ -35,7 +35,6 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\misc\GeoSik.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <ItemGroup>
     <PackageReference Include="Common.Logging" Version="3.3.1" />
     <PackageReference Include="Common.Logging.Core" Version="3.3.1" />
