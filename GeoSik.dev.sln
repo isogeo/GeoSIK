@@ -8,21 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{732BF627
 		GeoSik.proj = GeoSik.proj
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{02879CE5-78DF-46DC-9EA1-2FABB2BFD78D}"
-	ProjectSection(SolutionItems) = preProject
-		misc\GeoSik.Data.Entity.nuspec = misc\GeoSik.Data.Entity.nuspec
-		misc\GeoSik.DotSpatial.nuspec = misc\GeoSik.DotSpatial.nuspec
-		misc\GeoSik.Fdo.nuspec = misc\GeoSik.Fdo.nuspec
-		misc\GeoSik.nuspec = misc\GeoSik.nuspec
-		misc\GeoSik.ProjNet.nuspec = misc\GeoSik.ProjNet.nuspec
-		misc\GeoSik.Services.nuspec = misc\GeoSik.Services.nuspec
-		misc\GeoSik.SharpMap.nuspec = misc\GeoSik.SharpMap.nuspec
-		misc\GeoSik.SqlServer.2008R2.nuspec = misc\GeoSik.SqlServer.2008R2.nuspec
-		misc\GeoSik.SqlServer.2012.nuspec = misc\GeoSik.SqlServer.2012.nuspec
-		misc\GeoSik.SqlServer.2014.nuspec = misc\GeoSik.SqlServer.2014.nuspec
-		misc\GeoSik.SqlServer.2016.nuspec = misc\GeoSik.SqlServer.2016.nuspec
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library", "Library\Library.csproj", "{3915ADD6-5F33-4452-89EA-8906518E2128}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{34AECC13-2214-4FB6-B4E5-016FEE0120A5}"
