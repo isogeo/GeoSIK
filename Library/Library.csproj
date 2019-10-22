@@ -1,5 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <version>2.1.1.1</version>
+    <PackageProjectUrl>http://geosikdev.blogspot.com/</PackageProjectUrl>
+    <RepositoryType>Git</RepositoryType>
+    <RepositoryUrl>https://github.com/isogeo/GeoSIK</RepositoryUrl>
+    <PackageTags>GeoSik OGC Geographical Standards Library Isogeo CSW</PackageTags>
+    <Authors>dev@isogeo.com</Authors>
+    <Owners>Isogeo</Owners>
+    <Copyright>Copyright © 2012-2019 Isogeo</Copyright>
+    <Description>Library that allows the use OGC standards in .NET applications.</Description>
+    <PackageDescription>Library that allows the use OGC standards in .NET applications.</PackageDescription>
+  </PropertyGroup>
+  <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <RootNamespace>GeoSik</RootNamespace>
     <AssemblyName>GeoSik</AssemblyName>
@@ -42,16 +54,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\misc\GeoSik.snk</AssemblyOriginatorKeyFile>
-    <PackageProjectUrl>http://geosikdev.blogspot.com/</PackageProjectUrl>
-    <RepositoryType>Git</RepositoryType>
-    <RepositoryUrl>https://github.com/isogeo/GeoSIK</RepositoryUrl>
-    <PackageTags>GeoSik OGC Geographical Standards Library Isogeo CSW</PackageTags>
-    <version>2.1.1.1</version>
-    <Authors>dev@isogeo.com</Authors>
-    <Owners>Isogeo</Owners>
-    <Copyright>Copyright © 2012-2019 Isogeo</Copyright>
-    <Description>Library that allows the use OGC standards in .NET applications.</Description>
-    <PackageDescription>Library that allows the use OGC standards in .NET applications.</PackageDescription>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
