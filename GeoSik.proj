@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <!-- Import external targets -->
-  <Import Project="$(MSBuildProjectDirectory)\packages\Isogeo.Build.*\tools\build\Isogeo.Common.targets" />
+  <!--<Import Project="$(MSBuildProjectDirectory)\packages\Isogeo.Build.*\tools\build\Isogeo.Common.targets" />-->
 
 
 
