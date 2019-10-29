@@ -1,6 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <version>2.1.1.1</version>
+    <PackageTags>GeoSik ProjNet coordinate systems projections</PackageTags>
+    <RepositoryType>Git</RepositoryType>
+    <RepositoryUrl>https://github.com/isogeo/GeoSIK</RepositoryUrl>
+    <PackageProjectUrl>http://geosikdev.blogspot.com/</PackageProjectUrl>
+    <Authors>dev@isogeo.com</Authors>
+    <Owners>Isogeo</Owners>
+    <Copyright>Copyright © 2012-2019 Isogeo</Copyright>
+    <Description>Library that makes GeoSik interoperable with Proj.NET projections.</Description>
+    <PackageDescription>Library that makes GeoSik interoperable with Proj.NET projections.</PackageDescription>
+  </PropertyGroup>
+  <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <RootNamespace>GeoSik.ProjNet</RootNamespace>
     <AssemblyName>GeoSik.ProjNet</AssemblyName>
@@ -37,16 +48,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\misc\GeoSik.snk</AssemblyOriginatorKeyFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageTags>GeoSik ProjNet coordinate systems projections</PackageTags>
-    <RepositoryType>Git</RepositoryType>
-    <RepositoryUrl>https://github.com/isogeo/GeoSIK</RepositoryUrl>
-    <PackageProjectUrl>http://geosikdev.blogspot.com/</PackageProjectUrl>
-    <Authors>dev@isogeo.com</Authors>
-    <Description>Library that makes GeoSik interoperable with Proj.NET projections.</Description>
-    <PackageDescription>Library that makes GeoSik interoperable with Proj.NET projections.</PackageDescription>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <PackageReference Include="ProjNet" Version="1.2" />
   </ItemGroup>
