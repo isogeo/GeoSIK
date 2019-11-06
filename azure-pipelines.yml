@@ -34,27 +34,19 @@ variables:
 
   ## NUGET PUBLICATION ##
   nuGetPackagePatternToPublish: $(artifactPath)/**/*.nupkg
-  excludeNuGetPackages: '!$(artifactPath)\**\Data.Entity.*.nupkg;!$(artifactPath)\**\WebSample.*.nupkg'
-  nuGetFeedCredentials: 'NugetOrg_asIsogeo'
   nuGetSource: https://api.nuget.org/v3/index.json
-
-  ## TEST EXEUCTION ##
-  # noBlockingTests: Can't specify false because currently not 100% succeed tests
-  # Reason : problem with results of xunit.visualstudio NuGet Package, defer with MSBuild execution tests
-  #          in theory, have 100% of succeed tests, but they aren't all full on Azure devops/VisualStudio (compatibility with xunit ?)
-  noBlockingTests: 'true'
 
 resources:
   repositories:
     - repository: templates
       type: github
       name: isogeo/devops-templates
-      ref: refs/tags/v1.2.0
+      ref: refs/tags/v1.2.1
       endpoint: isogeo
 
 stages:
 
-# See Net/Pipeline/directory for more details about parameters (isogeo/devops-templates repository)
+# See templates/wiki for more details about parameters (isogeo/devops-templates repository)
 # Mandatory : solution
 - template: Net/Pipeline/NuGetsPipelineWithoutPublish.yml@templates
   parameters:
