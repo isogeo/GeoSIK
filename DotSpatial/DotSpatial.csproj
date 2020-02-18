@@ -1,6 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <version>2.1.1.1</version>
+    <PackageProjectUrl>http://geosikdev.blogspot.com/</PackageProjectUrl>
+    <Authors>dev@isogeo.com</Authors>
+    <Owners>Isogeo</Owners>
+    <Copyright>Copyright © 2012-2019 Isogeo</Copyright>
+    <Description>Library that makes GeoSik interoperable with DotSpatial projections.</Description>
+    <PackageDescription>Library that makes GeoSik interoperable with DotSpatial projections.</PackageDescription>
+    <RepositoryUrl>https://github.com/isogeo/GeoSIK</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>GeoSik DotSpatial coordinate systems projections</PackageTags>
+  </PropertyGroup>
+  <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <RootNamespace>GeoSik.DotSpatial</RootNamespace>
     <AssemblyName>GeoSik.DotSpatial</AssemblyName>
@@ -9,11 +20,28 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DocumentationFile>bin\$(Configuration)\GeoSik.DotSpatial.xml</DocumentationFile>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <DebugType>pdbonly</DebugType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebugType>pdbonly</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>3</WarningLevel>
@@ -23,16 +51,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\misc\GeoSik.snk</AssemblyOriginatorKeyFile>
-    <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageProjectUrl>http://geosikdev.blogspot.com/</PackageProjectUrl>
-    <Authors>dev@isogeo.com</Authors>
-    <RepositoryUrl>https://github.com/isogeo/GeoSIK</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <PackageTags>GeoSik DotSpatial coordinate systems projections</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <ItemGroup>
     <PackageReference Include="DotSpatial.Projections" Version="1.9" />
   </ItemGroup>

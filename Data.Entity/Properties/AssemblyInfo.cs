@@ -27,7 +27,7 @@ using System.Runtime.InteropServices;
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
 // associées à un assembly.
 [assembly: AssemblyTitle("GeoSik.Data.Entity")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Library that makes GeoSik interoperable with Entity Framework spatial types.")]
 [assembly: AssemblyCulture("")]
 
 // L'affectation de la valeur false à ComVisible rend les types invisibles dans cet assembly 
