@@ -1,5 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/fpurmd7uhom6endc/branch/master?svg=true)](https://ci.appveyor.com/project/mcartoixa/geosik/branch/master)
-[![Build status](https://ci.appveyor.com/api/projects/status/o7kb3urokq7d8fm2?svg=true)](https://ci.appveyor.com/project/GutsJM/geosik)
+[![Build status](https://ci.appveyor.com/api/projects/status/o7kb3urokq7d8fm2?svg=true)](https://ci.appveyor.com/project/GutsJM/geosik)  
+[![Build Status](https://dev.azure.com/isogeo/Isogeo%20API/_apis/build/status/isogeo.GeoSIK?branchName=master)](https://dev.azure.com/isogeo/Isogeo%20API/_build/latest?definitionId=42&branchName=master)
 
 
 PREREQUISITES
